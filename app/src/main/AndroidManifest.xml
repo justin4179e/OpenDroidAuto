@@ -59,6 +59,9 @@
         <service android:enabled="true" android:name=".service.ODAService" android:exported="false">
         </service>
 
+        <service android:enabled="true" android:name=".service.DebugShellService" android:process=":debug" android:exported="false">
+        </service>
+
         <receiver android:name=".manager.UsbReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="it.smg.hu.USB_PERMISSION" />

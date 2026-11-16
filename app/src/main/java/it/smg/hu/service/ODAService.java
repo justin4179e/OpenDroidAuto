@@ -63,6 +63,14 @@ public class ODAService extends Service implements IAndroidAutoEntityEventHandle
     private Handler mainHandler_;
 
     private volatile boolean isRunning_;
+
+    // Process-wide view of "a projection session is live", so the launcher icon
+    // and the auto-start can return to it instead of opening a second session.
+    private static volatile boolean sessionActive_ = false;
+
+    public static boolean isSessionActive() {
+        return sessionActive_;
+    }
     private volatile boolean stopRequested_;
     private volatile boolean shutdownRequested_;
     private String currentMode_;
@@ -129,6 +137,7 @@ public class ODAService extends Service implements IAndroidAutoEntityEventHandle
                         }
                         androidAutoEntity_.start(this);
                         isRunning_ = true;
+                        sessionActive_ = true;
                         ConnectionManager.instance().active(getString(R.string.connection_usb_active));
                     } else {
                         Log.e(TAG, "Error in open usb device");
@@ -172,6 +181,7 @@ public class ODAService extends Service implements IAndroidAutoEntityEventHandle
                     }
                     androidAutoEntity_.start(this);
                     isRunning_ = true;
+                    sessionActive_ = true;
                     ConnectionManager.instance().active(getString(R.string.connection_wifi_active));
                 } else {
                     ConnectionManager.instance().failed(getString(R.string.connection_wifi_gateway_error));
@@ -248,6 +258,7 @@ public class ODAService extends Service implements IAndroidAutoEntityEventHandle
 
         // The native teardown is not reentrant, and stop() arrives from the UI
         // thread, from the connection thread and from native quit callbacks.
+        sessionActive_ = false;
         if (!stopping_.compareAndSet(false, true)) {
             if (Log.isInfo()) Log.i(TAG, "stop already in progress");
             return;
@@ -318,6 +329,7 @@ public class ODAService extends Service implements IAndroidAutoEntityEventHandle
             // Cleared unconditionally so a failed teardown cannot wedge the
             // service into a state where no further session can be started.
             androidAutoEntity_ = null;
+            sessionActive_ = false;
             startThread_ = null;
             currentMode_ = null;
             shutdownRequested_ = false;

@@ -26,5 +26,14 @@
         android:text="@string/conn_settings_enableHfp"
         android:textColor="@color/settings_text_primary" />
 
+    <CheckBox
+        android:id="@+id/auto_start_usb"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_gravity="left"
+        android:layout_marginTop="6dp"
+        android:text="@string/conn_settings_autoStartUsb"
+        android:textColor="@color/settings_text_primary" />
+
 
 </LinearLayout>

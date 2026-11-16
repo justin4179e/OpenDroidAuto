@@ -25,6 +25,9 @@ public class ConnectivityFragment extends BaseSettingsFragment {
         CheckBox enableHfp = view.findViewById(R.id.enable_hfp);
         initCheckBox(enableHfp, settings.connectivity, Settings.Connectivity.CONN_ENABLED_HFP, Settings.Connectivity.CONN_ENABLED_HFP_DEFAULT_VALUE);
 
+        CheckBox autoStartUsb = view.findViewById(R.id.auto_start_usb);
+        initCheckBox(autoStartUsb, settings.connectivity, Settings.Connectivity.CONN_AUTO_START_USB, Settings.Connectivity.CONN_AUTO_START_USB_DEFAULT_VALUE);
+
         return view;
 
     }

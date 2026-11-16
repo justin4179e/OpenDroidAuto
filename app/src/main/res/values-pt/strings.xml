@@ -121,6 +121,7 @@
     <string name="input_settings_mic_source">Fonte</string>
     <string name="conn_settings_enableAd2p">Ativar A2DP</string>
     <string name="conn_settings_enableHfp">Ativar HFP</string>
+    <string name="conn_settings_autoStartUsb">Iniciar Android Auto automaticamente (USB)</string>
     <string name="keymap_steeringwheel_desc">Comandos do volante</string>
     <string name="keymap_settings_btnleft">Esquerda</string>
     <string name="keymap_settings_btnright">Direita</string>

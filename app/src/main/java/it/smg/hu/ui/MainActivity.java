@@ -82,6 +82,21 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         if (Log.isDebug()) Log.d(TAG, "onResume");
         super.onResume();
+
+        // Re-opening ODA while Android Auto is running must return to the live
+        // projection, not to the dashboard (the app badge that used to do this is
+        // off by default now).
+        if (ODAService.isSessionActive() && !PlayerActivity.isActive()) {
+            String mode = ConnectionManager.instance().mode();
+            if (mode != null) {
+                if (Log.isInfo()) Log.i(TAG, "session running -> back to PlayerActivity");
+                Intent player = new Intent(this, PlayerActivity.class);
+                player.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                player.putExtra("mode", mode);
+                startActivity(player);
+            }
+        }
+
         playerLaunchPending_ = PlayerActivity.isActive();
         registerConnectionReceivers();
 

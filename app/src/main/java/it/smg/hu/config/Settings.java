@@ -243,9 +243,9 @@ public class Settings {
         public final static int VIDEO_DPI_DEFAULT_VALUE = 140;
         public final static String VIDEO_MARGIN_DEFAULT_VALUE = "0,0";
         public final static String VIDEO_NIGHT_MODE_DEFAULT_VALUE = "DEVICE";
-        public final static boolean VIDEO_SHOW_MEDIA_NOTIFICATION_DEFAULT_VALUE = true;
+        public final static boolean VIDEO_SHOW_MEDIA_NOTIFICATION_DEFAULT_VALUE = false; // off: no music display blocking the Honda UI
         public final static boolean VIDEO_SHOW_NAVIGATION_NOTIFICATION_DEFAULT_VALUE = true;
-        public final static boolean VIDEO_SHOW_APP_BADGE_DEFAULT_VALUE = true;
+        public final static boolean VIDEO_SHOW_APP_BADGE_DEFAULT_VALUE = false; // off: no top-left arrow overlay blocking touches
 
         public int resolution(){
             return SP.getInt(VIDEO_RESOLUTION,VIDEO_RESOLUTION_DEFAULT_VALUE);
@@ -307,9 +307,19 @@ public class Settings {
     public class Connectivity extends Base {
         public final static String CONN_ENABLED_AD2P = "audio_enable_ad2p";
         public final static String CONN_ENABLED_HFP = "audio_enable_hfp";
+        public final static String CONN_AUTO_START_USB = "conn_auto_start_usb";
 
         public final static boolean CONN_ENABLED_AD2P_DEFAULT_VALUE = true;
         public final static boolean CONN_ENABLED_HFP_DEFAULT_VALUE = true;
+        public final static boolean CONN_AUTO_START_USB_DEFAULT_VALUE = true;
+
+        /** Start the USB projection by itself as soon as the phone is ready in AOAP mode. */
+        public boolean autoStartUsb(){
+            return SP.getBoolean(CONN_AUTO_START_USB, CONN_AUTO_START_USB_DEFAULT_VALUE);
+        }
+        public void autoStartUsb(boolean value){
+            SP.edit().putBoolean(CONN_AUTO_START_USB, value).apply();
+        }
 
 
         public boolean enableA2dp(){

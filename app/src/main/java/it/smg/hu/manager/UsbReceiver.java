@@ -35,7 +35,9 @@ public class UsbReceiver extends BroadcastReceiver {
         } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
             manager.onUsbDetached(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
         } else if (USBManager.ATTACH_AOAP_DEVICE.equals(action)) {
-            if (!MainActivity.isActive()){
+            if (AutoStarter.schedule(context)) {
+                if (Log.isDebug()) Log.d(TAG, "auto-start scheduled, no popup");
+            } else if (!MainActivity.isActive()){
                 if (Log.isDebug()) Log.d(TAG, "open popup activity");
                 NotificationFactory.instance().notifyStartRequest();
             }

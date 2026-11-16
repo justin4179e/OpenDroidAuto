@@ -60,6 +60,12 @@ public class PlayerActivity extends Activity implements ServiceConnection, Surfa
             startMode_ = b == null ? null : b.getString("mode");
         }
 
+        // Recreated without a mode (e.g. brought back from the launcher):
+        // use the mode of the connection that is currently known.
+        if (startMode_ == null && ConnectionManager.instance() != null) {
+            startMode_ = ConnectionManager.instance().mode();
+        }
+
         if (Log.isDebug()) Log.d(TAG, "start mode: " + startMode_);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -240,7 +246,11 @@ public class PlayerActivity extends Activity implements ServiceConnection, Surfa
 
         isServiceBound_ = true;
 
-        if (isRunning_){
+        // A fresh PlayerActivity over a session that is already live (resume via
+        // launcher / auto-start) must only regain focus, never open a second
+        // connection - that produced the "USB error" disconnect.
+        if (isRunning_ || ODAService.isSessionActive()){
+            isRunning_ = true;
             odaService_.gainFocus();
         } else {
             start();
