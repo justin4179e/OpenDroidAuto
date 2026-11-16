@@ -98,7 +98,8 @@ jobs:
             echo "ODA_STABLE_SIGNING=false" >> "$GITHUB_ENV"
           fi
       - name: Require stable signing for repository builds
-        if: github.event_name == 'push'
+        # Only the upstream repo has the release keystore; forks fall back to debug signing.
+        if: github.event_name == 'push' && github.repository == 'MaKi983/OpenDroidAuto'
         run: test "$ODA_STABLE_SIGNING" = "true"
       - name: Build
         run: |
