@@ -113,6 +113,11 @@ public class HondaConnectManager {
 
     private boolean restoreActivity_;
     private boolean isRunning_;
+    // True while PlayerActivity is in the foreground (initAudioBinding ..
+    // sendToBackground/endAudioBinding), for every auth type. isRunning_ is only
+    // set for PREINSTALL, so gating onShowView on it meant THIRD_PARTY installs
+    // never took the steering wheel back after the Honda volume popup.
+    private volatile boolean inForeground_;
     private boolean hasAudioFocus_;
     private boolean hasAudioFocusForMic_;
     private ProcessControl pControl_;
@@ -374,6 +379,7 @@ public class HondaConnectManager {
     // Used in onResume
     public void initAudioBinding(){
         if (Log.isDebug()) Log.d(TAG, "initAudioBinding -> app with auth " + authType());
+        inForeground_ = true;
         // if app has THIRD_PARTY auth will have exclusive audio focus, only bind wheel service
         if (isPreinstall()){
             if (Log.isDebug()) Log.d(TAG, "initAudioBinding -> app auth = preinstall -> register ModeMgr and SW callback");
@@ -402,6 +408,7 @@ public class HondaConnectManager {
     // Used in onPause (app in background)
     public void sendToBackground(){
         if (Log.isDebug()) Log.d(TAG, "sendToBackground -> app with auth " + authType() + " unregister SW callback");
+        inForeground_ = false;
         unregisterSteeringMenuCallback();
         unregisterModeMgrSWCallbacks();
         notifySteeringMenuDispMode(0);
@@ -409,6 +416,7 @@ public class HondaConnectManager {
 
     public void endAudioBinding(){
         if (Log.isDebug()) Log.d(TAG, "endAudioBinding -> app with auth " + authType());
+        inForeground_ = false;
 
         stopMicSession();
 
@@ -1040,8 +1048,11 @@ public class HondaConnectManager {
         private static final String TAG = "HondaConnectManager-SteeringMenuServiceCallback";
 
         public void onShowView() {
-            if (Log.isDebug()) Log.d(TAG, "onShowView isRunning_ " + isRunning_);
-            if (isRunning_) {
+            if (Log.isDebug()) Log.d(TAG, "onShowView isRunning_ " + isRunning_ + " inForeground_ " + inForeground_);
+            // Called when the Honda UI (e.g. the volume popup) hands the steering
+            // wheel back: re-claim it while the projection is on screen, otherwise
+            // next/previous stop working after the first volume change.
+            if (isRunning_ || inForeground_) {
                 notifySteeringMenuDispMode(1);
             }
         }
